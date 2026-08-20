@@ -24,7 +24,7 @@ This lab simulates a two-site enterprise network (India HQ and USA branch) built
 - FortiGate firewall
 - Site-to-Site VPN tunnel connecting the USA branch to the India HQ network
 
-/diagrams/topology.png
+![Network Topology](diagrams/topology.png)
 
 ## Objectives
 - Simulate a realistic enterprise network with segmented zones (security services, corporate LAN, SOC)
