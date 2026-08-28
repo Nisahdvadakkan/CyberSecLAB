@@ -56,7 +56,7 @@ This lab simulates a two-site enterprise network (India HQ and USA branch) built
 - Verified site-to-site VPN connectivity and traffic flow between India HQ and the USA branch-
 - The screenshot below confirms controlled connectivity between segmented subnets, including the remote USA branch PC communicating with the SOC (Wazuh) over the IPSec VPN tunnel.
 
-![Wazuh Dashboard](screenshots/Wazuh Dashboard.PNG)
+![Wazuh Dashboard](screenshots/WazuhDashboard.PNG)
 
 ## Repository Structure
 ```
