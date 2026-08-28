@@ -76,4 +76,7 @@ This lab simulates a two-site enterprise network (India HQ and USA branch) built
 ```
 
 ## Future Improvements
-*(Optional but a nice touch — e.g., "add SIEM correlation rules for lateral movement," "test DLP with sample exfiltration attempts," "expand to a third site")*
+add SIEM correlation rules for lateral movement
+test DLP with sample exfiltration attempts 
+SOC investigation
+Incident response
