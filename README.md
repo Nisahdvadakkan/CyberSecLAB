@@ -53,7 +53,10 @@ This lab simulates a two-site enterprise network (India HQ and USA branch) built
 - Ran Nmap scans against the Forcepoint NGFW from an external-facing position to assess exposed ports/services
 - Reviewed and validated firewall rule behavior (allowed vs. blocked traffic between zones)
 - Checked whether segmentation correctly isolated the Security Services, Corp-LAN, and SOC subnets from each other
-- Verified site-to-site VPN connectivity and traffic flow between India HQ and the USA branch
+- Verified site-to-site VPN connectivity and traffic flow between India HQ and the USA branch-
+- The screenshot below confirms controlled connectivity between segmented subnets, including the remote USA branch PC communicating with the SOC (Wazuh) over the IPSec VPN tunnel.
+
+![Wazuh Dashboard](screenshots/Wazuh Dashboard.PNG)
 
 ## Repository Structure
 ```
