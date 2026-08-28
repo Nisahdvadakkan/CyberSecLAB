@@ -55,9 +55,6 @@ This lab simulates a two-site enterprise network (India HQ and USA branch) built
 - Checked whether segmentation correctly isolated the Security Services, Corp-LAN, and SOC subnets from each other
 - Verified site-to-site VPN connectivity and traffic flow between India HQ and the USA branch
 
-*(Fill in specifics here once you've documented them — e.g., "Nmap scan showed only ports X/Y open externally, consistent with firewall policy" or "identified that [specific rule] allowed broader access than intended and corrected it." Concrete findings like this are what make a lab stand out — even small ones.)*
-
-
 ## Repository Structure
 ```
 ├── README.md
