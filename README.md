@@ -57,8 +57,6 @@ This lab simulates a two-site enterprise network (India HQ and USA branch) built
 
 *(Fill in specifics here once you've documented them — e.g., "Nmap scan showed only ports X/Y open externally, consistent with firewall policy" or "identified that [specific rule] allowed broader access than intended and corrected it." Concrete findings like this are what make a lab stand out — even small ones.)*
 
-## Key Learnings
-*(2–4 bullet points in your own words — what surprised you, what you'd do differently, what this taught you about real enterprise security. Recruiters read this section closely because it shows you can reflect, not just follow a guide.)*
 
 ## Repository Structure
 ```
