@@ -53,7 +53,8 @@ This lab simulates a two-site enterprise network (India HQ and USA branch) built
 - Ran Nmap scans against the Forcepoint NGFW from an external-facing position to assess exposed ports/services
 - Reviewed and validated firewall rule behavior (allowed vs. blocked traffic between zones)
 - Checked whether segmentation correctly isolated the Security Services, Corp-LAN, and SOC subnets from each other
-- Verified site-to-site VPN connectivity and traffic flow between India HQ and the USA branch-
+- Verified site-to-site VPN connectivity and traffic flow between India HQ and the USA branch
+- Built a full Forcepoint DLP → Wazuh SIEM pipeline: configured syslog forwarding from Forcepoint DLP, wrote custom Wazuh decoders/rules to parse Forcepoint's CEF-formatted incident/audit/system logs, validated end-to-end with wazuh-logtest, and confirmed real DLP incidents generating correctly-leveled alerts, indexed and visible on a custom Wazuh dashboard. Full writeup, including six non-obvious failure modes and how each was diagnosed, in notes/forcepoint-dlp-wazuh-integration.md
 - The screenshot below confirms controlled connectivity between segmented subnets, including the remote USA branch PC communicating with the SOC (Wazuh) over the IPSec VPN tunnel.
 
 ![Wazuh Dashboard](screenshots/WazuhDashboard.PNG)
@@ -67,16 +68,22 @@ This lab simulates a two-site enterprise network (India HQ and USA branch) built
 │   ├── forcepoint-ngfw/
 │   ├── fortigate/
 │   └── wazuh/
+│       ├── decoders/
+│       │   └── forcepoint_dlp_decoders.xml
+│       └── rules/
+│           └── forcepoint_dlp_rules.xml
 ├── screenshots/
 │   ├── nmap-scans/
 │   ├── firewall-rules/
 │   └── wazuh-dashboard/
+│       └── forcepoint-dlp-overview.png   (add your dashboard screenshot here)
 └── notes/
-    └── findings.md
+    ├── findings.md
+    └── forcepoint-dlp-wazuh-integration.md
 ```
 
 ## Future Improvements
-add SIEM correlation rules for lateral movement
-test DLP with sample exfiltration attempts 
+add SIEM correlation rules for lateral movement → DLP-to-SIEM pipeline complete (decoders, rules, dashboard); see notes/forcepoint-dlp-wazuh-integration.md. Lateral-movement-specific correlation rules still open.
+test DLP with sample exfiltration attempts (alerting pipeline now in place to make this measurable)
 SOC investigation
 Incident response
