@@ -55,9 +55,7 @@ This lab simulates a two-site enterprise network (India HQ and USA branch) built
 - Checked whether segmentation correctly isolated the Security Services, Corp-LAN, and SOC subnets from each other
 - Verified site-to-site VPN connectivity and traffic flow between India HQ and the USA branch
 - Built a full Forcepoint DLP → Wazuh SIEM pipeline: configured syslog forwarding from Forcepoint DLP, wrote custom Wazuh decoders/rules to parse Forcepoint's CEF-formatted incident/audit/system logs, validated end-to-end with wazuh-logtest, and confirmed real DLP incidents generating correctly-leveled alerts, indexed and visible on a custom Wazuh dashboard. Full writeup, including six non-obvious failure modes and how each was diagnosed, in notes/forcepoint-dlp-wazuh-integration.md
-- The screenshot below confirms controlled connectivity between segmented subnets, including the remote USA branch PC communicating with the SOC (Wazuh) over the IPSec VPN tunnel.
 
-![Wazuh Dashboard](screenshots/WazuhDashboard.PNG)
 
 ## Repository Structure
 ```
