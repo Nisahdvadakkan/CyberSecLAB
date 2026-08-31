@@ -81,7 +81,7 @@ This lab simulates a two-site enterprise network (India HQ and USA branch) built
 │   ├── nmap-scans/
 │   ├── firewall-rules/
 │   └── wazuh-dashboard/
-│       └── forcepoint-dlp-overview.png   (add your dashboard screenshot here)
+│       └── forcepoint-dlp-overview.png
 └── notes/
     ├── findings.md
     └── forcepoint-dlp-wazuh-integration.md
