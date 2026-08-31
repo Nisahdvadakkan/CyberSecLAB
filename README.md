@@ -63,7 +63,9 @@ This lab simulates a two-site enterprise network (India HQ and USA branch) built
 ├── diagrams/
 │   └── topology.png
 ├── configs/
-│   ├── forcepoint-ngfw/
+│   ├──HQ(india)
+|       |──forcepoint-ngfw/
+|       
 │   ├── fortigate/
 │   └── wazuh/
 │       ├── decoders/
