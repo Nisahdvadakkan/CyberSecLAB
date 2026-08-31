@@ -64,14 +64,19 @@ This lab simulates a two-site enterprise network (India HQ and USA branch) built
 │   └── topology.png
 ├── configs/
 │   ├──HQ(india)
-|       |──forcepoint-ngfw/
-|       
-│   ├── fortigate/
-│   └── wazuh/
-│       ├── decoders/
-│       │   └── forcepoint_dlp_decoders.xml
-│       └── rules/
-│           └── forcepoint_dlp_rules.xml
+|   |    ├──forcepoint-ngfw/
+|   |    ├──Forcepoint Security Solutions
+|   |    └──wazuh/
+|   |           ├── decoders/
+|   |           |       └── forcepoint_dlp_decoders.xml
+|   |           └── rules/
+│   |                   └── forcepoint_dlp_rules.xml
+|   └──Branch(USA)
+|        └──fortigate/
+│   
+│       
+│          
+│       
 ├── screenshots/
 │   ├── nmap-scans/
 │   ├── firewall-rules/
