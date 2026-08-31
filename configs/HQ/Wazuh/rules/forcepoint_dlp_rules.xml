@@ -1,0 +1,86 @@
+<!--
+  Forcepoint DLP - rules
+  Place this file at: /var/ossec/etc/rules/forcepoint_dlp_rules.xml
+  Rule IDs 100200-100299 reserved for this ruleset (adjust if you already use this range).
+
+  NOTE: This build of Wazuh registers all child decoders under the top-level parent's
+  name ('forcepoint-dlp') regardless of use_own_name, so rules here branch on which
+  fields are present rather than on decoded_as for the type-specific decoders.
+  Only incident events have severity_type; only audit events have admin_role;
+  only system events have reporter.
+-->
+
+<group name="forcepoint,forcepoint_dlp,">
+
+  <!-- Base rule: catches any decoded Forcepoint DLP event, of any type -->
+  <rule id="100200" level="3">
+    <decoded_as>forcepoint-dlp</decoded_as>
+    <description>Forcepoint DLP: event received</description>
+  </rule>
+
+  <!-- Incident events (DLP Syslog type) - identified by presence of severity_type -->
+  <rule id="100201" level="3">
+    <if_sid>100200</if_sid>
+    <field name="severity_type">\w+</field>
+    <description>Forcepoint DLP: incident event - $(category) - action: $(dlp_action)</description>
+    <group>forcepoint_dlp_incident,</group>
+  </rule>
+
+  <!-- Audit log events - identified by presence of admin_role -->
+  <rule id="100202" level="3">
+    <if_sid>100200</if_sid>
+    <field name="admin_role">\w+</field>
+    <description>Forcepoint DLP: audit log event - $(dlp_action)</description>
+    <group>forcepoint_dlp_audit,</group>
+  </rule>
+
+  <!-- System log events - identified by presence of reporter -->
+  <rule id="100203" level="2">
+    <if_sid>100200</if_sid>
+    <field name="reporter">\w+</field>
+    <description>Forcepoint DLP: system log event - $(message)</description>
+    <group>forcepoint_dlp_system,</group>
+  </rule>
+
+  <!-- Incident severity escalation, based on Forcepoint's own severityType field -->
+  <rule id="100210" level="5">
+    <if_sid>100201</if_sid>
+    <field name="severity_type">^LOW$</field>
+    <description>Forcepoint DLP: Low severity incident - $(category) - action: $(dlp_action)</description>
+    <group>forcepoint_dlp_incident,</group>
+  </rule>
+
+  <rule id="100211" level="8">
+    <if_sid>100201</if_sid>
+    <field name="severity_type">^MEDIUM$</field>
+    <description>Forcepoint DLP: Medium severity incident - $(category) - action: $(dlp_action)</description>
+    <group>forcepoint_dlp_incident,</group>
+  </rule>
+
+  <rule id="100212" level="12">
+    <if_sid>100201</if_sid>
+    <field name="severity_type">^HIGH$</field>
+    <description>Forcepoint DLP: High severity incident - $(category) - action: $(dlp_action)</description>
+    <group>forcepoint_dlp_incident,</group>
+  </rule>
+
+  <!-- Highlight actual blocks separately, regardless of severity, since these are actioned events -->
+  <rule id="100220" level="10">
+    <if_sid>100201</if_sid>
+    <field name="dlp_action">^Blocked$</field>
+    <description>Forcepoint DLP: transfer BLOCKED by policy - $(category) - user: $(source_user)</description>
+    <mitre>
+      <id>T1048</id>
+    </mitre>
+    <group>forcepoint_dlp_incident,</group>
+  </rule>
+
+  <!-- Admin changes to policies are worth a closer look -->
+  <rule id="100230" level="6">
+    <if_sid>100202</if_sid>
+    <field name="category">^POLICY_MNG$</field>
+    <description>Forcepoint DLP: policy configuration changed - $(dlp_action)</description>
+    <group>forcepoint_dlp_audit,</group>
+  </rule>
+
+</group>
