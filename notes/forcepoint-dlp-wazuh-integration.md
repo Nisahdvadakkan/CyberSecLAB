@@ -45,7 +45,7 @@ Wazuh Dashboard (Discover + custom "Forcepoint DLP Overview" dashboard)
    ```
    Also enabled `<logall>yes</logall>` / `<logall_json>yes</logall_json>` under `<global>` during troubleshooting, to confirm raw messages were landing in `archives.log` before rules existed to alert on them.
 
-3. **Custom decoders and rules** — see `configs/wazuh/decoders/forcepoint_dlp_decoders.xml` and `configs/wazuh/rules/forcepoint_dlp_rules.xml` in this repo.
+3. **Custom decoders and rules** — see `configs/HQ/Wazuh/decoders/forcepoint_dlp_decoders.xml` and `configs/HQ/Wazuh/rules/forcepoint_dlp_rules.xml` in this repo.
 
 ## Log Format
 
