@@ -1,0 +1,46 @@
+<!--
+  Forcepoint DLP - CEF syslog decoder
+  Matches messages sent from Forcepoint DLP's Remediation > Syslog Settings
+  Format reference: https://help.forcepoint.com/dlp/10.3.0/dlphelp/B9749178-B5F4-4096-B122-2D4D312B4FFF.html
+
+  NOTE: flattened to two levels (parent -> child) instead of three (parent -> header -> type).
+  This Wazuh build rejected a child-of-a-child parent reference, so each type-specific
+  decoder below parses the CEF header AND its own extension fields in a single regex.
+
+  Place this file at: /var/ossec/etc/decoders/forcepoint_dlp_decoders.xml
+-->
+
+<!-- Parent decoder: identifies any Forcepoint DLP CEF message -->
+<decoder name="forcepoint-dlp">
+  <prematch>CEF:\d+\|Forcepoint\|Forcepoint DLP\|</prematch>
+</decoder>
+
+<!-- "DLP Syslog" (incident) events -->
+<!-- Example: CEF:0|Forcepoint|Forcepoint DLP|10.3.0|9666301|DLP Syslog|0| act=Blocked duser=... -->
+<decoder name="forcepoint-dlp-incident">
+  <parent>forcepoint-dlp</parent>
+  <use_own_name>yes</use_own_name>
+  <prematch>\|DLP Syslog\|</prematch>
+  <regex type="pcre2">CEF:\d+\|Forcepoint\|Forcepoint DLP\|(\S+)\|(\S+)\|DLP Syslog\|(\d+)\| act=(.*?) duser=(.*?) fname=(.*?) msg=(.*?) suser=(.*?) cat=(.*?) sourceServiceName=(.*?) analyzedBy=(.*?) loginName=(.*?) sourceIp=(.*?) severityType=(.*?) sourceHost=(.*?) productVersion=(.*?) maxMatches=(.*?) timeStamp=(.*?) destinationHosts=(.*?) eventId=(.*)$</regex>
+  <order>product_version, signature_id, cef_severity, dlp_action, destination_user, attachments, message, source_user, category, source_service, analyzed_by, login_name, source_ip, severity_type, source_host, product_version_ext, max_matches, dlp_timestamp, destination_hosts, event_id</order>
+</decoder>
+
+<!-- "DLP Audit Log" events (admin config changes) -->
+<!-- Example: CEF:0|Forcepoint|Forcepoint DLP|10.2.0|18657|DLP Audit Log|6|act=Rule 'test': Updated msg=... -->
+<decoder name="forcepoint-dlp-audit">
+  <parent>forcepoint-dlp</parent>
+  <use_own_name>yes</use_own_name>
+  <prematch>\|DLP Audit Log\|</prematch>
+  <regex type="pcre2">CEF:\d+\|Forcepoint\|Forcepoint DLP\|(\S+)\|(\S+)\|DLP Audit Log\|(\d+)\|act=(.*?) msg=(.*?) timeStamp=(.*?) suser=(.*?) role=(.*?) cat=(.*?) modifiedItm=(.*)$</regex>
+  <order>product_version, signature_id, cef_severity, dlp_action, message, dlp_timestamp, admin_user, admin_role, category, modified_item</order>
+</decoder>
+
+<!-- "DLP System Log" events (no signature_id field in the CEF header for this type) -->
+<!-- Example: CEF:0|Forcepoint|Forcepoint DLP|10.2.0|DLP System Log|6| msg=Cumulative DLP database... -->
+<decoder name="forcepoint-dlp-system">
+  <parent>forcepoint-dlp</parent>
+  <use_own_name>yes</use_own_name>
+  <prematch>\|DLP System Log\|</prematch>
+  <regex type="pcre2">CEF:\d+\|Forcepoint\|Forcepoint DLP\|(\S+)\|DLP System Log\|(\d+)\| msg=(.*?) timeStamp=(.*?) cat=(.*?) src=(.*?) component=(.*?) code=(.*?) srcType=(.*?) localTime=(.*)$</regex>
+  <order>product_version, cef_severity, message, dlp_timestamp, category, reporter, component, dlp_code, source_type, dlp_local_time</order>
+</decoder>
