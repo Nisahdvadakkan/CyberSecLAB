@@ -1,6 +1,7 @@
 # Forcepoint DLP → Wazuh SIEM Integration
 
 **Date:** August 2026
+
 **Goal:** Forward Forcepoint DLP incident, audit, and system logs to Wazuh over syslog, build custom decoders/rules to parse the CEF-formatted messages, generate real alerts, and surface them in a Wazuh dashboard.
 
 This closes out two items from the lab's Future Improvements list: *"add SIEM correlation rules"* and groundwork for *"test DLP with sample exfiltration attempts"* (the alerting pipeline needed to exist before exfiltration testing would be observable).
