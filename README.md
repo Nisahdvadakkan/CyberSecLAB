@@ -1,4 +1,4 @@
-# Enterprise Security Lab — Multi-Site Network with Layered Defense (GNS3)
+# Enterprise Security Lab — Multi-Site Network with Layered Defense (GNS3).
 
 ## Overview
 
