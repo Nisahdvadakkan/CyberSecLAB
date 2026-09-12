@@ -4,6 +4,7 @@
 
 **Component:** INDIAFW-HA (NGFW-1 / NGFW-2) — India HQ perimeter cluster
 .
+
 **Objective:** Eliminate the single point of failure at the India HQ internet edge by clustering two Forcepoint NGFW engines in Active-Standby mode, validated with a real forced-failover test rather than a config screenshot alone.
 
 ---
