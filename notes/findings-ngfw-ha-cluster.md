@@ -26,10 +26,10 @@ During initial clustering, NGFW-2 (`NGFWHA-2`) showed intermittent **Offline →
 1. **GNS3 host resource pressure (ruled out)** — each NGFW node is a fixed-memory VM independent of overall host capacity. Checked `free -h` inside each node directly (not host-level Task Manager) to confirm swap/RAM inside the VM itself wasn't tripping Forcepoint's internal Engine Test thresholds.
 2. **Heartbeat link instability (investigated)** — confirmed the link between NGFW-1 and NGFW-2's heartbeat interface (`eth7`) was live and passing traffic; a multicast reachability test on the sync channel was inconclusive on its own and not treated as decisive evidence.
 3. **Unicast MAC / switch relearning lag (considered)** — with Unicast MAC mode, CVI MAC ownership has to be relearned by the GNS3 OpenvSwitch nodes each time a node flaps, which can look like instability even when the node process itself is healthy.
-4. **SMC logs (decisive check)** — filtering SMC logs by Sender = NGFW-2 gave the actual failing Engine Test rather than relying on inference from symptoms.
-5. **The Interface 1,2,3 were not plugged-in to any of the switches and once they have plugged into the appropriate swithes the Interface status brought up, That made the nodes to think none of the nodes are down.
-
-Root cause Identified was the 5 one .
+4. **SMC logs (decisive check)** —Filtering SMC logs by Sender = NGFW-2 revealed the actual failing condition: interfaces 1, 2, and 3 were not physically connected to any switch. Once connected, their status came up correctly and the false "node down" readings stopped. This was the confirmed root cause.
+   
+ "Root cause confirmed: item 4 above (unplugged interfaces)"
+ 
 ## 3. Recovery Behavior — Documented, Not a Bug
 
 After a node recovers from an outage, it does **not** automatically rejoin as Active or Standby — it sits in a non-participating state until an administrator manually issues **Go Standby**. This is Forcepoint's intended safety behavior: a node that just crashed shouldn't silently rejoin production traffic handling without a human confirming it's healthy.
