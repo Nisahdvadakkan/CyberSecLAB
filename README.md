@@ -60,12 +60,24 @@ This lab simulates a two-site enterprise network (India HQ and USA branch) built
 
 ## Testing & Validation
 
-- Ran Nmap scans against the Forcepoint NGFW from an external-facing position to assess exposed ports/services — default-deny policy confirmed, no unexpected exposure.
-- Reviewed and validated firewall rule behavior (allowed vs. blocked traffic between zones).
-- Checked whether segmentation correctly isolated the Security Services, Corp-LAN, and SOC subnets from each other — blind scans against internal subnets from the WAN-side position returned uniformly filtered/no-response results, confirming zero information leakage about which internal IPs are in use.
-- Verified site-to-site VPN connectivity and traffic flow between India HQ and the USA branch.
-- Built a full Forcepoint DLP → Wazuh SIEM pipeline: configured syslog forwarding from Forcepoint DLP, wrote custom Wazuh decoders/rules to parse Forcepoint's CEF-formatted incident/audit/system logs, validated end-to-end with wazuh-logtest, and confirmed real DLP incidents generating correctly-leveled alerts, indexed and visible on a custom Wazuh dashboard. Full writeup, including six non-obvious failure modes and how each was diagnosed, in [`notes/forcepoint-dlp-wazuh-integration.md`](notes/forcepoint-dlp-wazuh-integration.md).
-- Forced a failover on the Active-Standby NGFW cluster and measured actual traffic interruption via continuous ping — confirmed automatic failover with a brief, bounded outage window, plus the correct manual recovery procedure ("Go Standby") for a returning node. Full writeup in [`notes/findings-ngfw-ha-cluster.md`](notes/findings-ngfw-ha-cluster.md).
+### Firewall Cluster (NGFW HA)
+
+- **Cluster Configuration** — Deployed Active-Standby architecture with CVI (Cluster Virtual IP) and NDI (Node Dedicated IP) per interface. Screenshots show SMC dashboard, interface hierarchy, and live policy rules in [`screenshots/ha-cluster/`](screenshots/ha-cluster/).
+- **External Reconnaissance** — Ran Nmap scans from a Kali Linux attacker position (via BhartiAirtel ISP) targeting the cluster WAN edge (192.168.122.180). Results: all ports return `filtered`, no service banners, no information leakage — confirming default-deny policy enforcement.
+- **Zone Segmentation Testing** — Blind scans from internal non-domain test PC (192.168.60.100) against Security Services (192.168.50.0/24), SOC (192.168.70.0/24), and other zones returned uniformly `filtered` responses — confirming bidirectional zone isolation and zero topology leakage.
+- **Failover Validation** — Forced failure of active node (NGFW-1) during continuous ping to cluster CVI. Measured results: automatic failover to NGFW-2 confirmed, ~3 packets lost / ~3 second outage, manual recovery via "Go Standby" verified correct per Forcepoint design. Full writeup in [`notes/findings-ngfw-ha-cluster.md`](notes/findings-ngfw-ha-cluster.md).
+
+### Firewall Rules & Policy
+
+- **Policy Review** — Live screenshot of INDIAFW-HA firewall policy table showing zone-to-zone rules, VPN rules, heartbeat sync, and outbound policies. See [`configs/HQ/Firewall/firewall-rules-summary.md`](configs/HQ/Firewall/firewall-rules-summary.md) for detailed rule-by-rule breakdown.
+- **Site-to-Site VPN** — Verified IPSec tunnel between India HQ (Forcepoint NGFW) and USA branch (FortiGate) remains stable under sustained load. Configuration details in [`configs/USA-Branch/FortinetFW.md`](configs/USA-Branch/FortinetFW.md).
+
+### DLP & SIEM Integration
+
+- **End-to-End Pipeline** — Built Forcepoint DLP → Wazuh integration: configured syslog forwarding from DLP Manager, wrote custom Wazuh decoders/rules to parse CEF-formatted logs, validated with wazuh-logtest, confirmed real incidents generate appropriately-leveled alerts.
+- **Dashboard** — Live Wazuh dashboard ("Forcepoint DLP Overview") shows blocked vs. allowed incidents over time, policy categories, severity breakdown, and top source users. Screenshot in [`screenshots/wazuh-siem/`](screenshots/wazuh-siem/).
+- **Endpoint Visibility** — Wazuh manages six active agents across infrastructure and endpoints (FMSSRVR, DC1, DLP2, SQL, testpc3, TestPC-USA-01), providing centralized logging and threat detection. Agent status visible in SIEM dashboard.
+- **Known Issues & Fixes** — Documented eight non-obvious integration gotchas: TCP/UDP mismatch, reserved field name collisions, decoder chaining limits, field-name collapsing, timestamp mapping failures, rule group inheritance, and aggregation field selection. Full writeup in [`notes/forcepoint-dlp-wazuh-integration.md`](notes/forcepoint-dlp-wazuh-integration.md).
 
 ## Repository Structure
 
@@ -85,11 +97,13 @@ This lab simulates a two-site enterprise network (India HQ and USA branch) built
 │   └── USA-Branch/
 │       └── fortigate/
 ├── screenshots/
-│   ├── nmap-scans/
-│   ├── firewall-rules/
-│   ├── ha-failover/
-│   └── wazuh-dashboard/
-│       └── forcepoint-dlp-overview.png
+│   ├── ha-cluster/
+│   │   ├── INDIAFW-HA_cluster_dashboard.png
+│   │   ├── INDIAFW-HA_cluster_interface_Config.png
+│   │   └── INDIAFW-HA_cluster_Policy_rule.png
+│   └── wazuh-siem/
+│       ├── forcepoint_DLP_Wazuh_dashboard.png
+│       └── WazuhDashboard.PNG
 └── notes/
     ├── findings-ngfw-ha-cluster.md
     └── forcepoint-dlp-wazuh-integration.md

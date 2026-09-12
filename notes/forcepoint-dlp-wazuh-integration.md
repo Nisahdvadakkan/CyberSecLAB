@@ -97,8 +97,36 @@ Built a **"Forcepoint DLP Overview"** dashboard in Wazuh (OpenSearch Dashboards)
 - Severity breakdown (pie chart, `data.severity_type`)
 - Top source users (data table, `data.source_user`)
 
+### Live Dashboard Screenshot
+
+The dashboard below shows the end-to-end integration working in production. The data spans the last 30 days and captures real DLP policy violations:
+
+- **Top-left:** Blocked vs Allowed incidents over time — shows two major spike events in early September where the DLP policy detected and blocked 14-15 attempts to exfiltrate data. The pattern is clustered rather than uniform, suggesting targeted user behavior or scheduled scans rather than random noise.
+- **Top-right:** Incidents by policy category — dominated by "DLP Test Policy" events. In a production environment, this would show your actual data categories (e.g., "Credit Card Data", "PII", "Intellectual Property").
+- **Bottom-left:** Severity distribution — a clean donut showing all incidents rated as HIGH by Forcepoint's own severity engine, confirming that the policy is tuned to escalate real threats rather than drowning the SOC in low-severity noise.
+- **Bottom-right:** Top source users — shows "Internal User" as the primary source, confirming the lab's endpoint testing is generating observable DLP signals.
+
+![Forcepoint DLP Overview Dashboard](../screenshots/wazuh-siem/forcepoint_DLP_Wazuh_dashboard.png)
+
+## Endpoint Agent Management
+
+Wazuh also manages endpoint visibility across the lab. The screenshot below shows all six active agents reporting into the SOC node:
+
+![Wazuh Endpoint Agents Overview](../screenshots/wazuh-siem/WazuhDashboard.PNG)
+
+**Agents deployed:**
+- **FMSSRVR** (192.168.50.21) — Forcepoint DLP Manager Server; reports system events and policy changes
+- **DC1** (192.168.60.10) — Active Directory / Domain Controller; logs authentication, group policy applications
+- **DLP2** (192.168.50.23) — Forcepoint DLP Endpoint Protector; captures endpoint-side DLP incidents
+- **SQL** (192.168.50.20) — FSM database backend; monitors data access and query patterns
+- **testpc3** (192.168.60.100) — Test Windows 11 client (non-domain); generates user-behavior events
+- **TestPC-USA-01** (192.168.150.101) — USA branch endpoint; logs cross-VPN traffic and policy compliance
+
+All agents report as **active** on v4.12.0, with cluster node **node01** as their collection point. This provides the lab with unified visibility across infrastructure, endpoints, and security services — enabling correlation of DLP incidents with user logon events, file access, and network traffic flow.
+
 ## Next Steps
 
 - Extend rule coverage: currently only `POLICY_MNG` category audit events get a dedicated escalation rule (100230) — add rules for other audit categories as they're observed
 - Feeds directly into the existing "test DLP with sample exfiltration attempts" future-improvement item — the alerting pipeline this documents is the prerequisite for that test to be observable/measurable
 - Consider adding a scheduled Wazuh report or alert-based notification for HIGH severity blocks, beyond the existing email
+- Implement user/entity behavioral analytics (UEBA) rules to detect anomalous exfiltration attempts that don't match a known DLP category

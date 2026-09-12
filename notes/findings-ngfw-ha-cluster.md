@@ -48,6 +48,35 @@ Applying **Go Standby** manually resolved the recurring flap — the node then s
 
 **Outcome:** a working, validated Active-Standby Forcepoint NGFW cluster — real automatic failover, a bounded outage window, and a correct recovery procedure for the returning node.
 
+---
+
+## 5. Cluster Configuration — Live Screenshots
+
+### 5.1 SMC Cluster Dashboard
+The Forcepoint SMC dashboard below shows the INDIAFW-HA cluster in steady state. Both NGFWHA-1 and NGFWHA-2 nodes are synchronized and healthy; the Security Engine Load Trends graph confirms stable throughput with no anomalies.
+
+![Forcepoint NGFW HA Cluster Dashboard](../screenshots/ha-cluster/INDIAFW-HA_cluster_dashboard.png)
+
+### 5.2 Interface Configuration (CVI & NDI)
+This screenshot displays the interface hierarchy configured on the cluster. Each zone interface (WAN, Security Services, Corp-LAN, SOC, and Heartbeat) is broken down into:
+- **CVI** (Cluster Virtual IP) — the single address all external traffic routes to
+- **Node 1 NDI** and **Node 2 NDI** — management IPs for each node
+- **Heartbeat interface** — dedicated sync path between NGFW-1 and NGFW-2, using node-only addresses
+
+This design ensures no single node is a bottleneck for state sync or cluster identity.
+
+![NGFW HA Interface Configuration](../screenshots/ha-cluster/INDIAFW-HA_cluster_interface_Config.png)
+
+### 5.3 Firewall Policy Rules
+Below is the actual rule policy bound to the INDIAFW-HA cluster. Key observations:
+- **Zone-to-Zone Inter-cluster traffic** is allowed with AD-Auth group checks (e.g., row 5.6.3, internal AD authentication group required)
+- **Heartbeat rule** (5.6.16) permits the sync channel between nodes
+- **Site-to-Site VPN rules** explicitly allow the USA branch tunnel (rows 5.6.2, 5.6.5)
+- **Outbound policy** (Basic Outbound Policy) restricts external traffic to known destinations (row 5.6.18 onwards)
+- Every rule is logged and includes QoS class assignments for traffic shaping
+
+![NGFW HA Firewall Policy Rules](../screenshots/ha-cluster/INDIAFW-HA_cluster_Policy_rule.png)
+
 ## 5. Follow-Up / Future Work
 
 - [ ] Add a **Backup Heartbeat** interface (currently only Primary exists) — recommended by Forcepoint KB 000007930 for full redundancy of the heartbeat/sync path itself.
